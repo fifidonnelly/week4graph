@@ -1,43 +1,57 @@
-from collections import defaultdict
+import matplotlib.pyplot as plt
+import networkx as nx
 
-class Graph:
-    def __init__(self):
-        self.graph = defaultdict(list)
-
-    def add_edge(self, u, v):
-        self.graph[u].append(v)
-
-    def DFS(self, start, end):
-        visited = set()
-        path = []
-        self.DFS_helper(start, end, visited, path)
+def dfs(graph, start, end, path=[]):
+    path = path + [start]
+    
+    if start == end:
         return path
+    
+    if start not in graph:
+        return None
+    
+    for neighbor in graph[start]:
+        if neighbor not in path:
+            new_path = dfs(graph, neighbor, end, path)
+            if new_path:
+                return new_path
+            
+    return None
 
-    def DFS_helper(self, start, end, visited, path):
-        visited.add(start)
-        path.append(start)
+def visualize_graph(graph, path=None):
+    G = nx.Graph()
+    
+    for node in graph:
+        G.add_node(node)
+        for neighbor in graph[node]:
+            G.add_edge(node, neighbor)
+            
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True, node_size=1000, font_size=10)
+    
+    if path:
+        edges = [(path[i], path[i+1]) for i in range(len(path)-1)]
+        nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='r', width=2)
+    
+    plt.show()
 
-        if start == end:
-            return True
-
-        for neighbor in self.graph[start]:
-            if neighbor not in visited:
-                if self.DFS_helper(neighbor, end, visited, path):
-                    return True
-
-        path.pop()
-        return False
-
-graph = {
-    "A": ["B", "D"],
-    "B": ["A", "C"],
-    "C": ["B", "E"],
-    "D": ["A", "E"],
-    "E": ["D", "C"]
-}
-
-start = 0
-end = 3
-path = graph.DFS(start, end)
-
-print(f"Path from {start} to {end}: {path}")
+if __name__ == "__main__":
+    graph = {
+        "A": ["B", "D"],
+        "B": ["A", "C"],
+        "C": ["B", "E"],
+        "D": ["A", "E"],
+        "E": ["D", "C"]
+    }
+    
+    start_node = "A"
+    end_node = "E"
+    
+    path = dfs(graph, start_node, end_node)
+    
+    if path:
+        print(f"Path from {start_node} to {end_node}: {path}")
+        visualize_graph(graph, path)
+    else:
+        print(f"No path found from {start_node} to {end_node}")
+        visualize_graph(graph)
