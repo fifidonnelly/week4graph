@@ -1,0 +1,43 @@
+from collections import defaultdict
+
+class Graph:
+    def __init__(self):
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v):
+        self.graph[u].append(v)
+
+    def DFS(self, start, end):
+        visited = set()
+        path = []
+        self.DFS_helper(start, end, visited, path)
+        return path
+
+    def DFS_helper(self, start, end, visited, path):
+        visited.add(start)
+        path.append(start)
+
+        if start == end:
+            return True
+
+        for neighbor in self.graph[start]:
+            if neighbor not in visited:
+                if self.DFS_helper(neighbor, end, visited, path):
+                    return True
+
+        path.pop()
+        return False
+
+graph = {
+    "A": ["B", "D"],
+    "B": ["A", "C"],
+    "C": ["B", "E"],
+    "D": ["A", "E"],
+    "E": ["D", "C"]
+}
+
+start = 0
+end = 3
+path = graph.DFS(start, end)
+
+print(f"Path from {start} to {end}: {path}")
