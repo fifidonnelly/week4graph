@@ -34,5 +34,5 @@ def visualize_graph(graph, path=None):
 
 if __name__ == "__main__":
     graph = {
-        "A": ["B", "D"],
+        "A": ["B", "D"], }
        
